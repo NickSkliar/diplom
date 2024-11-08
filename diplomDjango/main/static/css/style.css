@@ -1,0 +1,156 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f8f8;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+}
+
+.left-panel, .right-panel {
+  background-color: #e0f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.left-panel h2, .right-panel h2 {
+  margin-bottom: 15px;
+}
+
+.data-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.data-item_b{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.weight {
+  font-weight: bold;
+}
+
+.buttons, .data-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button {
+  background-color: #36c2c2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2ea2a2;
+}
+
+/* Прокручиваемый контейнер для таблицы данных в правой панели */
+.scrollable-data-table {
+  max-height: 300px; /* Фиксированная высота для контейнера таблицы */
+  overflow-y: auto; /* Включаем вертикальную прокрутку */
+  margin-bottom: 10px;
+  border: 1px solid #ddd; /* Граница для прокручиваемого контейнера */
+  border-radius: 5px;
+  background-color: #ffffff; /* Цвет фона */
+}
+
+.scrollable-data-table::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-data-table::-webkit-scrollbar-thumb {
+  background-color: #36c2c2;
+  border-radius: 4px;
+}
+
+.scrollable-data-table::-webkit-scrollbar-track {
+  background: #e0f5f5;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.analytics {
+  margin-top: 20px;
+  background-color: #e0f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Остальные стили остаются без изменений */
+
+.scrollable-data-table table {
+  width: 100%; /* Ширина таблицы */
+  border-collapse: collapse; /* Объединение границ ячеек */
+}
+
+.scrollable-data-table th, .scrollable-data-table td {
+  padding: 10px; /* Отступы ячеек */
+  text-align: center; /* Выравнивание текста по центру */
+  border: 0,5px solid #ddd; /* Границы вокруг каждой ячейки */
+}
+.scrollable-data-table th {
+  background-color: #e0f5f5; /* Цвет фона заголовков */
+  font-weight: bold; /* Жирный шрифт для заголовков */
+  position: sticky; /* Делаем заголовок фиксированным при прокрутке */
+  top: 0; /* Привязываем к верху контейнера */
+  z-index: 10; /* Увеличиваем z-index для отображения над данными */
+}
+
+/* Для ячеек данных */
+.scrollable-data-table td {
+  background-color: #f9f9f9; /* Легкий фон для данных */
+}
