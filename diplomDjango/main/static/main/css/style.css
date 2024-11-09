@@ -21,6 +21,7 @@ header {
   margin-bottom: 20px;
 }
 
+
 .main-content {
   display: flex;
   gap: 20px;
@@ -77,6 +78,7 @@ button:hover {
   background-color: #2ea2a2;
 }
 
+
 /* Прокручиваемый контейнер для таблицы данных в правой панели */
 .scrollable-data-table {
   max-height: 300px; /* Фиксированная высота для контейнера таблицы */
@@ -130,7 +132,6 @@ th, td {
   border-radius: 10px;
 }
 
-/* Остальные стили остаются без изменений */
 
 .scrollable-data-table table {
   width: 100%; /* Ширина таблицы */
@@ -153,4 +154,25 @@ th, td {
 /* Для ячеек данных */
 .scrollable-data-table td {
   background-color: #f9f9f9; /* Легкий фон для данных */
+}
+
+/* Основні стилі для навігаційного контейнера */
+.navbar {
+    display: flex;
+    justify-content: center;
+
+    padding: 10px;
+
+        /* Стилі для кнопок навігації */
+.nav-button {
+    background-color: #36c2c2; /* Зелений колір кнопки */
+    color: white;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }

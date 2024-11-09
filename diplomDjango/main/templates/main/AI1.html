@@ -1,19 +1,9 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+{% extends 'main/layout.html' %}
+
+{% block title %} AI_1  {% endblock %}
+
+{% block content %}
     <div class="container">
-        <header>
-            <h1>Admin Panel</h1>
-            <p>Налаштування 1 нейронної мережі</p>
-        </header>
 
         <div class="main-content">
             <section class="left-panel">
@@ -198,5 +188,5 @@
             </div>
         </section>
     </div>
-</body>
-</html>
+
+{% endblock %}
