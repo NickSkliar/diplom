@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     #my app:
     'main',
     'firstAI',
-    'secondAI'
+    'secondAI',
+    'database',
 ]
 
 MIDDLEWARE = [

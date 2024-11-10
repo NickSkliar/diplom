@@ -1,3 +1,5 @@
 /.venv
 .idea
-/helperCod/DATASET
+/helperCod/exemple_data.csv
+/input_data_from_user
+/diplomDjango/db.sqlite3
