@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from database.models import download_db  # Импорт вашей модели
 
+
 class Command(BaseCommand):
     help = 'Импорт данных из CSV-файла в базу данных с выводом информации о процессе'
 
@@ -16,15 +17,12 @@ class Command(BaseCommand):
         self.stdout.write("Файл найден, начинается импорт...")
 
         try:
-            chunk_size = 10000  # Размер части, можно адаптировать в зависимости от памяти
+            chunk_size = 50000  # Размер части, можно адаптировать в зависимости от памяти
             chunks = pd.read_csv(csv_file_path, chunksize=chunk_size)
 
             for chunk_num, chunk in enumerate(chunks, start=1):
                 records_to_insert = []
                 for index, row in chunk.iterrows():
-                    # Вывод информации о текущей записи
-                    self.stdout.write(f"Запись пакета {index + 1} в части {chunk_num}")
-
                     records_to_insert.append(download_db(
                         flow_id=row['Flow ID'],
                         src_ip=row['Src IP'],
@@ -112,7 +110,11 @@ class Command(BaseCommand):
                     ))
 
                 # Пакетная вставка записей для оптимизации производительности
-                download_db.objects.bulk_create(records_to_insert, batch_size=1000)
+                download_db.objects.bulk_create(records_to_insert, batch_size=10000)
+
+                # Отображение количества записанных пакетов после вставки
+                self.stdout.write(
+                    self.style.SUCCESS(f"Часть {chunk_num} завершена, записано {chunk_num*len(records_to_insert)} записей."))
 
             self.stdout.write(self.style.SUCCESS("Импорт завершен успешно."))
         except Exception as e:
