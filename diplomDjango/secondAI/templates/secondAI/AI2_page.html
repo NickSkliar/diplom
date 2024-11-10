@@ -1,0 +1,193 @@
+{% extends 'main/layout.html' %}
+
+{% block title %} AI_1  {% endblock %}
+
+{% block content %}
+<p>ВТОРАЯ ХЕРОТА</p>
+    <div class="container">
+
+        <div class="main-content">
+            <section class="left-panel">
+              <div class="data-item">
+                <h2>Дані, з якими працюємо:</h2>  
+                <span class="weight"><h2>Ваги:</h2></span>
+            </div>
+            <div class="data-item">
+                <input type="checkbox" checked> ІР користувача 
+                <input type="number" class="weight-input" value="0.2" step="0.1" min="0"> <!-- Поле ввода для веса -->
+            </div>
+            <div class="data-item">
+                <input type="checkbox" checked> Логи 
+                <input type="number" class="weight-input" value="0.4" step="0.1" min="0"> <!-- Поле ввода для веса -->
+            </div>
+            <div class="data-item">
+                <input type="checkbox"> Порт підключення 
+                <input type="number" class="weight-input" value="0.1" step="0.1" min="0"> <!-- Поле ввода для веса -->
+            </div>
+            <div class="data-item">
+                <input type="checkbox" checked> Навантаження на сервер 
+                <input type="number" class="weight-input" value="0.6" step="0.1" min="0"> <!-- Поле ввода для веса -->
+            </div>
+            <div class="data-item">
+                <input type="checkbox" checked> Тривалість підключення 
+                <input type="number" class="weight-input" value="0.1" step="0.1" min="0"> <!-- Поле ввода для веса -->
+            </div>
+            <div class="data-item">
+                <input type="checkbox"> Кількість SQL запитів 
+                <input type="number" class="weight-input" value="0.2" step="0.1" min="0"> <!-- Поле ввода для веса -->
+            </div>
+            <div class="data-item_b">
+                <span class="weight"> b = 6 </span>
+            </div>
+            
+
+                <div class="buttons">
+                    <button>Перевчити</button>
+                    <button>Стоп навчання</button>
+                    <button>Видалити нейронну мережу</button>
+                </div>
+            </section>
+
+            <section class="right-panel">
+                <h2>Список даних:</h2>
+
+                <!-- Прокручиваемый контейнер для списка данных с фиксированными размерами -->
+                <div class="scrollable-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>CPU Load (%)</th>
+                                <th>Memory Usage (MB)</th>
+                                <th>SQL Queries</th>
+                                <th>Port</th>
+                                <th>Requests on Port</th>
+                                <th>Connection Date</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Пример строк -->
+                            <tr>
+                                <td>35.48</td>
+                                <td>9172.46</td>
+                                <td>8358</td>
+                                <td>36841</td>
+                                <td>118</td>
+                                <td>2024-09-18</td>
+                                <td>213.255.43.59</td>
+                            </tr>
+                            <tr>
+                                <td>16.53</td>
+                                <td>6651.24</td>
+                                <td>3564</td>
+                                <td>36646</td>
+                                <td>274</td>
+                                <td>2024-09-23</td>
+                                <td>195.203.18.23</td>
+                            </tr>
+                            <tr>
+                                <td>35.48</td>
+                                <td>9172.46</td>
+                                <td>8358</td>
+                                <td>36841</td>
+                                <td>118</td>
+                                <td>2024-09-18</td>
+                                <td>213.255.43.59</td>
+                            </tr>
+                            <tr>
+                                <td>16.53</td>
+                                <td>6651.24</td>
+                                <td>3564</td>
+                                <td>36646</td>
+                                <td>274</td>
+                                <td>2024-09-23</td>
+                                <td>195.203.18.23</td>
+                            </tr>
+                            <tr>
+                                <td>35.48</td>
+                                <td>9172.46</td>
+                                <td>8358</td>
+                                <td>36841</td>
+                                <td>118</td>
+                                <td>2024-09-18</td>
+                                <td>213.255.43.59</td>
+                            </tr>
+                            <tr>
+                                <td>16.53</td>
+                                <td>6651.24</td>
+                                <td>3564</td>
+                                <td>36646</td>
+                                <td>274</td>
+                                <td>2024-09-23</td>
+                                <td>195.203.18.23</td>
+                            </tr>
+                            <tr>
+                                <td>35.48</td>
+                                <td>9172.46</td>
+                                <td>8358</td>
+                                <td>36841</td>
+                                <td>118</td>
+                                <td>2024-09-18</td>
+                                <td>213.255.43.59</td>
+                            </tr>
+                            <tr>
+                                <td>16.53</td>
+                                <td>6651.24</td>
+                                <td>3564</td>
+                                <td>36646</td>
+                                <td>274</td>
+                                <td>2024-09-23</td>
+                                <td>195.203.18.23</td>
+                            </tr>
+                            <!-- Добавьте дополнительные строки данных здесь -->
+                        </tbody>
+                    </table>
+                </div>              
+
+                <!-- Кнопки, которые остаются под списком данных -->
+                <div class="data-buttons">
+                    <button>Стоп запис</button>
+                    <button>Продовжити запис</button>
+                    <button>Видалити дані</button>
+                    <button>Фільтр</button>
+                </div>
+            </section>
+        </div>
+
+        <section class="analytics">
+            <h2>Аналітика</h2>
+    <canvas id="attackChart" width="600" height="200"></canvas>
+            <div class="chart">
+                <script>
+        // Данные для графика: количество атак за каждый год
+        const labels = ['2020', '2021', '2022', '2023'];  // Годы
+        const attackData = [500, 750, 1200, 1500];        // Количество атак за каждый год
+
+        // Настройки для Chart.js
+        const ctx = document.getElementById('attackChart').getContext('2d');
+        const attackChart = new Chart(ctx, {
+            type: 'line',  // Тип графика - линейный
+            data: {
+                labels: labels,  // Подписи по оси X (годы)
+                datasets: [{
+                    label: 'Number of Attacks',
+                    data: attackData,  // Данные по оси Y (количество атак)
+                    borderColor: 'green',             // Цвет линии
+                    backgroundColor: 'rgba(0, 255, 0, 0.2)',  // Цвет под графиком
+                    borderWidth: 2                    // Толщина линии
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true  // Начинаем ось Y с нуля
+                    }
+                }
+            }
+        });
+    </script>
+            </div>
+        </section>
+    </div>
+
+{% endblock %}

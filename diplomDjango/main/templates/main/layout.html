@@ -14,10 +14,9 @@
             <h1>Admin Panel</h1>
                   <!-- Контейнер навігації -->
     <div class="navbar">
-        <a href="#home" class="nav-button">Главная</a>
-        <a href="#data" class="nav-button">Работа с данными</a>
-        <a href="#network1" class="nav-button">Нейронная сеть 1</a>
-        <a href="#network2" class="nav-button">Нейронная сеть 2</a>
+        <a href="{% url 'main_page' %}" class="nav-button">Главная</a>
+        <a href="{% url 'AI1_page' %}" class="nav-button">Нейронная сеть 1</a>
+        <a href="{% url 'AI2_page' %}" class="nav-button">Нейронная сеть 2</a>
     </div>
 </header>
 
