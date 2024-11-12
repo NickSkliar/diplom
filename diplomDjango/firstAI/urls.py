@@ -1,6 +1,8 @@
 from django.urls import path
-from . import  views
+from . import views
+
 
 urlpatterns = [
-    path('', views.AI1_page, name='AI1_page'),
+    path('', views.table_view, name='AI1_page'),
+
 ]

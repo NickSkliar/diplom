@@ -8,53 +8,85 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f0f8f8;
   color: #333;
+  height: 100vh; /* Устанавливаем высоту на весь экран */
 }
 
 .container {
-  max-width: 1200px;
+display: flex;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
+  height: 95%;
 }
 
 header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 20px;
 }
-
 
 .main-content {
+  max-width: 100%;
   display: flex;
-  gap: 20px;
+  gap: 2%;
+  justify-content: center;
+  height: 100%; /* Высота на весь экран */
 }
 
-.left-panel, .right-panel {
+.left-panel {
   background-color: #e0f5f5;
   padding: 20px;
   border-radius: 10px;
   flex: 1;
   display: flex;
+  max-width: 22%;
   flex-direction: column;
+   height: 100%; /* Высота панели на весь экран */
+  overflow-y: auto; /* Прокрутка внутри панели, если контент выходит за пределы */
 }
 
-.left-panel h2, .right-panel h2 {
-  margin-bottom: 15px;
+.right-panel {
+  background-color: #e0f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 2;
+  max-width: 65%; /* Ограничиваем ширину правой панели до 65% */
+  flex-direction: column;
+  height: 100%; /* Высота панели на весь экран */
+  overflow-y: auto; /* Прокрутка внутри панели, если контент выходит за пределы */
+}
+
+.data-item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.data-item h2 {
+align-items: center;
 }
 
 .data-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* Три колонки: инпут, текст, вес */
+  align-items: flex-start; /* Выровнять элементы по верхнему краю */
+  margin-bottom: 5px;
+   gap: 5px; /* Промежуток между инпутом и текстом */
+  padding: 5px 0; /* Отступы сверху и снизу каждого элемента */
 }
 
-.data-item_b{
+.data-item_b {
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
+  padding: 5px;
+}
+
+.data-item .weight {
+  align-self: flex-end; /* Выровнять второй заголовок по нижнему краю */
 }
 
 .weight {
   font-weight: bold;
+  margin-bottom: 50px;
+
 }
 
 .buttons, .data-buttons {
@@ -78,11 +110,11 @@ button:hover {
   background-color: #2ea2a2;
 }
 
-
 /* Прокручиваемый контейнер для таблицы данных в правой панели */
 .scrollable-data-table {
-  max-height: 300px; /* Фиксированная высота для контейнера таблицы */
+  max-height: 600px; /* Фиксированная высота для контейнера таблицы */
   overflow-y: auto; /* Включаем вертикальную прокрутку */
+  overflow-x: auto; /* Включаем горизонтальную прокрутку */
   margin-bottom: 10px;
   border: 1px solid #ddd; /* Граница для прокручиваемого контейнера */
   border-radius: 5px;
@@ -91,6 +123,7 @@ button:hover {
 
 .scrollable-data-table::-webkit-scrollbar {
   width: 8px;
+  height: 8px; /* Высота горизонтальной полосы прокрутки */
 }
 
 .scrollable-data-table::-webkit-scrollbar-thumb {
@@ -105,6 +138,7 @@ button:hover {
 table {
   width: 100%;
   border-collapse: collapse;
+   min-width: 1200px; /* Минимальная ширина таблицы для горизонтальной прокрутки */
 }
 
 th, td {
@@ -131,7 +165,6 @@ th, td {
   height: auto;
   border-radius: 10px;
 }
-
 
 .scrollable-data-table table {
   width: 100%; /* Ширина таблицы */
@@ -160,9 +193,8 @@ th, td {
 .navbar {
     display: flex;
     justify-content: center;
-
-    padding: 10px;
-
+    padding: 5px;
+    }
         /* Стилі для кнопок навігації */
 .nav-button {
     background-color: #36c2c2; /* Зелений колір кнопки */
@@ -175,4 +207,56 @@ th, td {
     border-radius: 5px;
     text-decoration: none;
     transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #2ea2a2;
+}
+
+form{
+ padding: 10px;
+}
+
+/* Основные стили для формы */
+#range-form {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Расстояние между элементами формы */
+  margin: 15px 0; /* Отступы сверху и снизу для всей формы */
+  padding: 10px;
+  border-radius: 8px; /* Скругленные углы */
+  border: 1px solid #ddd;
+}
+
+/* Стили для текста "Від" и "до" */
+#range-form a {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+}
+
+/* Стили для полей ввода */
+.weight-input {
+  width: 80px;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Стили для кнопки */
+#range-form button {
+  color: white;
+  padding: 8px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#range-form button:hover {
+  background-color: #2a9d9d;
 }

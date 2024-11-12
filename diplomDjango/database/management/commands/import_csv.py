@@ -1,121 +1,147 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
 import os
-from database.models import download_db  # Импорт вашей модели
-
+from database.models import DownloadDB  # Імпорт моделі
+import datetime
+import pytz  # Для роботи з часовими поясами
 
 class Command(BaseCommand):
-    help = 'Импорт данных из CSV-файла в базу данных с выводом информации о процессе'
+    help = 'Імпорт даних з CSV-файлу в модель DownloadDB з обробкою часових поясів'
 
     def handle(self, *args, **options):
-        csv_file_path = '../input_data_from_user/largest_dataSet.csv'
+        csv_file_path = '../input_data_from_user/cleaned_file.csv'
 
         if not os.path.exists(csv_file_path):
-            self.stdout.write(self.style.ERROR(f"Файл {csv_file_path} не найден."))
+            self.stdout.write(self.style.ERROR(f"Файл {csv_file_path} не знайдено."))
             return
 
-        self.stdout.write("Файл найден, начинается импорт...")
+        self.stdout.write("Файл знайдено, починається імпорт...")
 
         try:
-            chunk_size = 50000  # Размер части, можно адаптировать в зависимости от памяти
+            chunk_size = 1000000  # Розмір частини, можна адаптувати в залежності від пам'яті
             chunks = pd.read_csv(csv_file_path, chunksize=chunk_size)
+
+            total_rows = 0
+            skipped_rows = 0
+            total_records_inserted = 0
+            timezone = pytz.UTC  # Встановлення часового поясу в UTC, змініть за потребою
 
             for chunk_num, chunk in enumerate(chunks, start=1):
                 records_to_insert = []
+                chunk_rows = 0  # Кількість рядків у поточному чанку
+                chunk_skipped = 0  # Кількість пропущених рядків у поточному чанку
                 for index, row in chunk.iterrows():
-                    records_to_insert.append(download_db(
-                        flow_id=row['Flow ID'],
-                        src_ip=row['Src IP'],
-                        src_port=row['Src Port'],
-                        dst_ip=row['Dst IP'],
-                        dst_port=row['Dst Port'],
-                        protocol=row['Protocol'],
-                        flow_duration=row['Flow Duration'],
-                        tot_fwd_pkts=row['Tot Fwd Pkts'],
-                        tot_bwd_pkts=row['Tot Bwd Pkts'],
-                        totlen_fwd_pkts=row['TotLen Fwd Pkts'],
-                        totlen_bwd_pkts=row['TotLen Bwd Pkts'],
-                        fwd_pkt_len_max=row['Fwd Pkt Len Max'],
-                        fwd_pkt_len_min=row['Fwd Pkt Len Min'],
-                        fwd_pkt_len_mean=row['Fwd Pkt Len Mean'],
-                        fwd_pkt_len_std=row['Fwd Pkt Len Std'],
-                        bwd_pkt_len_max=row['Bwd Pkt Len Max'],
-                        bwd_pkt_len_min=row['Bwd Pkt Len Min'],
-                        bwd_pkt_len_mean=row['Bwd Pkt Len Mean'],
-                        bwd_pkt_len_std=row['Bwd Pkt Len Std'],
-                        flow_byts_per_sec=row['Flow Byts/s'],
-                        flow_pkts_per_sec=row['Flow Pkts/s'],
-                        flow_iat_mean=row['Flow IAT Mean'],
-                        flow_iat_std=row['Flow IAT Std'],
-                        flow_iat_max=row['Flow IAT Max'],
-                        flow_iat_min=row['Flow IAT Min'],
-                        fwd_iat_tot=row['Fwd IAT Tot'],
-                        fwd_iat_mean=row['Fwd IAT Mean'],
-                        fwd_iat_std=row['Fwd IAT Std'],
-                        fwd_iat_max=row['Fwd IAT Max'],
-                        fwd_iat_min=row['Fwd IAT Min'],
-                        bwd_iat_tot=row['Bwd IAT Tot'],
-                        bwd_iat_mean=row['Bwd IAT Mean'],
-                        bwd_iat_std=row['Bwd IAT Std'],
-                        bwd_iat_max=row['Bwd IAT Max'],
-                        bwd_iat_min=row['Bwd IAT Min'],
-                        fwd_psh_flags=row['Fwd PSH Flags'],
-                        bwd_psh_flags=row['Bwd PSH Flags'],
-                        fwd_urg_flags=row['Fwd URG Flags'],
-                        bwd_urg_flags=row['Bwd URG Flags'],
-                        fwd_header_len=row['Fwd Header Len'],
-                        bwd_header_len=row['Bwd Header Len'],
-                        fwd_pkts_per_sec=row['Fwd Pkts/s'],
-                        bwd_pkts_per_sec=row['Bwd Pkts/s'],
-                        pkt_len_min=row['Pkt Len Min'],
-                        pkt_len_max=row['Pkt Len Max'],
-                        pkt_len_mean=row['Pkt Len Mean'],
-                        pkt_len_std=row['Pkt Len Std'],
-                        pkt_len_var=row['Pkt Len Var'],
-                        fin_flag_cnt=row['FIN Flag Cnt'],
-                        syn_flag_cnt=row['SYN Flag Cnt'],
-                        rst_flag_cnt=row['RST Flag Cnt'],
-                        psh_flag_cnt=row['PSH Flag Cnt'],
-                        ack_flag_cnt=row['ACK Flag Cnt'],
-                        urg_flag_cnt=row['URG Flag Cnt'],
-                        cwe_flag_count=row['CWE Flag Count'],
-                        ece_flag_cnt=row['ECE Flag Cnt'],
-                        down_up_ratio=row['Down/Up Ratio'],
-                        pkt_size_avg=row['Pkt Size Avg'],
-                        fwd_seg_size_avg=row['Fwd Seg Size Avg'],
-                        bwd_seg_size_avg=row['Bwd Seg Size Avg'],
-                        fwd_byts_per_avg=row['Fwd Byts/b Avg'],
-                        fwd_pkts_per_avg=row['Fwd Pkts/b Avg'],
-                        fwd_blk_rate_avg=row['Fwd Blk Rate Avg'],
-                        bwd_byts_per_avg=row['Bwd Byts/b Avg'],
-                        bwd_pkts_per_avg=row['Bwd Pkts/b Avg'],
-                        bwd_blk_rate_avg=row['Bwd Blk Rate Avg'],
-                        subflow_fwd_pkts=row['Subflow Fwd Pkts'],
-                        subflow_fwd_byts=row['Subflow Fwd Byts'],
-                        subflow_bwd_pkts=row['Subflow Bwd Pkts'],
-                        subflow_bwd_byts=row['Subflow Bwd Byts'],
-                        init_fwd_win_byts=row['Init Fwd Win Byts'],
-                        init_bwd_win_byts=row['Init Bwd Win Byts'],
-                        fwd_act_data_pkts=row['Fwd Act Data Pkts'],
-                        fwd_seg_size_min=row['Fwd Seg Size Min'],
-                        active_mean=row['Active Mean'],
-                        active_std=row['Active Std'],
-                        active_max=row['Active Max'],
-                        active_min=row['Active Min'],
-                        idle_mean=row['Idle Mean'],
-                        idle_std=row['Idle Std'],
-                        idle_max=row['Idle Max'],
-                        idle_min=row['Idle Min'],
-                        label=row['Label']
-                    ))
+                    total_rows += 1
+                    chunk_rows += 1
+                    try:
+                        # Перевіряємо наявність та непорожність поля 'Timestamp'
+                        timestamp_str = row.get('Timestamp')
+                        if pd.isnull(timestamp_str) or timestamp_str == '':
+                            skipped_rows += 1
+                            chunk_skipped += 1
+                            # Виводимо причину пропуску рядка
+                            self.stdout.write(f"Рядок {index + 1} пропущено: відсутнє або порожнє поле 'Timestamp'.")
+                            continue
+                        # Список можливих форматів дати і часу
+                        timestamp_formats = [
+                            '%d/%m/%Y %I:%M:%S %p',  # Формат з AM/PM
+                            '%d/%m/%Y %H:%M:%S',     # Формат з 24-годинним часом
+                            '%Y-%m-%d %H:%M:%S',     # Формат '2010-06-12 08:34:32'
+                        ]
+                        for fmt in timestamp_formats:
+                            try:
+                                timestamp = datetime.datetime.strptime(timestamp_str, fmt)
+                                # Якщо успішно розпарсено, виходимо з циклу
+                                break
+                            except ValueError:
+                                timestamp = None
+                                continue
+                        if timestamp is None:
+                            # Пропускаємо рядок, якщо жоден формат не підійшов
+                            skipped_rows += 1
+                            chunk_skipped += 1
+                            self.stdout.write(f"Рядок {index + 1} пропущено: неправильний формат 'Timestamp'.")
+                            continue
+                        # Застосування часового поясу після успішного парсингу
+                        timestamp = timezone.localize(timestamp)
 
-                # Пакетная вставка записей для оптимизации производительности
-                download_db.objects.bulk_create(records_to_insert, batch_size=10000)
+                        # Список обов'язкових полів
+                        required_fields = {
+                            'src_ip': row.get('Src IP', ''),
+                            'dst_ip': row.get('Dst IP', ''),
+                            'src_port': row.get('Src Port', ''),
+                            'dst_port': row.get('Dst Port', ''),
+                            'protocol': row.get('Protocol', ''),
+                            'flow_duration': row.get('Flow Duration', ''),
+                            'tot_fwd_pkts': row.get('Tot Fwd Pkts', ''),
+                            'tot_bwd_pkts': row.get('Tot Bwd Pkts', ''),
+                            'flow_byts_per_sec': row.get('Flow Byts/s', ''),
+                            'flow_pkts_per_sec': row.get('Flow Pkts/s', ''),
+                            'fwd_iat_mean': row.get('Fwd IAT Mean', ''),
+                            'bwd_iat_mean': row.get('Bwd IAT Mean', ''),
+                            'down_up_ratio': row.get('Down/Up Ratio', ''),
+                            'pkt_size_avg': row.get('Pkt Size Avg', ''),
+                            'fwd_pkts_per_sec': row.get('Fwd Pkts/s', ''),
+                            'bwd_pkts_per_sec': row.get('Bwd Pkts/s', ''),
+                            'label': row.get('Label', ''),
+                        }
 
-                # Отображение количества записанных пакетов после вставки
+                        # Перевіряємо, чи є порожні або відсутні значення в обов'язкових полях
+                        missing_fields = [key for key, value in required_fields.items() if pd.isnull(value) or value == '']
+                        if missing_fields:
+                            skipped_rows += 1
+                            chunk_skipped += 1
+                            self.stdout.write(f"Рядок {index + 1} пропущено: відсутні обов'язкові поля {', '.join(missing_fields)}.")
+                            continue
+
+                        # Створення екземпляра моделі DownloadDB
+                        record = DownloadDB(
+                            src_ip=required_fields['src_ip'],
+                            dst_ip=required_fields['dst_ip'],
+                            src_port=int(required_fields['src_port']),
+                            dst_port=int(required_fields['dst_port']),
+                            protocol=int(required_fields['protocol']),
+                            timestamp=timestamp,
+                            flow_duration=int(required_fields['flow_duration']),
+                            tot_fwd_pkts=int(required_fields['tot_fwd_pkts']),
+                            tot_bwd_pkts=int(required_fields['tot_bwd_pkts']),
+                            flow_byts_per_sec=float(required_fields['flow_byts_per_sec']),
+                            flow_pkts_per_sec=float(required_fields['flow_pkts_per_sec']),
+                            fwd_iat_mean=float(required_fields['fwd_iat_mean']),
+                            bwd_iat_mean=float(required_fields['bwd_iat_mean']),
+                            down_up_ratio=float(required_fields['down_up_ratio']),
+                            pkt_size_avg=float(required_fields['pkt_size_avg']),
+                            fwd_pkts_per_sec=float(required_fields['fwd_pkts_per_sec']),
+                            bwd_pkts_per_sec=float(required_fields['bwd_pkts_per_sec']),
+                            label=required_fields['label'],
+                            data_type='unlabeled'  # Встановлюємо значення за замовчуванням
+                        )
+
+                        records_to_insert.append(record)
+                    except Exception as e:
+                        skipped_rows += 1
+                        chunk_skipped += 1
+                        self.stdout.write(f"Рядок {index + 1} пропущено: помилка при обробці ({e}).")
+                        continue
+
+                # Пакетне вставлення записів для оптимізації продуктивності
+                DownloadDB.objects.bulk_create(records_to_insert, batch_size=200000)
+                records_inserted = len(records_to_insert)
+                total_records_inserted += records_inserted
+
+                # Відображення кількості записаних записів після вставки
                 self.stdout.write(
-                    self.style.SUCCESS(f"Часть {chunk_num} завершена, записано {chunk_num*len(records_to_insert)} записей."))
+                    self.style.SUCCESS(
+                        f"Частина {chunk_num} завершена: оброблено рядків {chunk_rows}, записано {records_inserted} записів, "
+                        f"пропущено у цій частині {chunk_skipped} рядків."
+                    )
+                )
 
-            self.stdout.write(self.style.SUCCESS("Импорт завершен успешно."))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Імпорт успішно завершено. Всього рядків: {total_rows}, всього записано: {total_records_inserted}, "
+                    f"всього пропущено: {skipped_rows}"
+                )
+            )
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f"Произошла ошибка: {e}"))
+            self.stdout.write(self.style.ERROR(f"Сталася помилка: {e}"))
