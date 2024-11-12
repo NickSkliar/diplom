@@ -6,153 +6,99 @@
     <div class="container">
 
         <div class="main-content">
+
             <section class="left-panel">
               <div class="data-item">
                 <h2>Дані, з якими працюємо:</h2>  
                 <span class="weight"><h2>Ваги:</h2></span>
             </div>
-            <div class="data-item">
-                <input type="checkbox" checked> ІР користувача 
-                <input type="number" class="weight-input" value="0.2" step="0.1" min="0"> <!-- Поле ввода для веса -->
-            </div>
-            <div class="data-item">
-                <input type="checkbox" checked> Логи 
-                <input type="number" class="weight-input" value="0.4" step="0.1" min="0"> <!-- Поле ввода для веса -->
-            </div>
-            <div class="data-item">
-                <input type="checkbox"> Порт підключення 
-                <input type="number" class="weight-input" value="0.1" step="0.1" min="0"> <!-- Поле ввода для веса -->
-            </div>
-            <div class="data-item">
-                <input type="checkbox" checked> Навантаження на сервер 
-                <input type="number" class="weight-input" value="0.6" step="0.1" min="0"> <!-- Поле ввода для веса -->
-            </div>
-            <div class="data-item">
-                <input type="checkbox" checked> Тривалість підключення 
-                <input type="number" class="weight-input" value="0.1" step="0.1" min="0"> <!-- Поле ввода для веса -->
-            </div>
-            <div class="data-item">
-                <input type="checkbox"> Кількість SQL запитів 
-                <input type="number" class="weight-input" value="0.2" step="0.1" min="0"> <!-- Поле ввода для веса -->
-            </div>
-            <div class="data-item_b">
-                <span class="weight"> b = 6 </span>
-            </div>
-            
 
-                <div class="buttons">
-                    <button>Перевчити</button>
-                    <button>Стоп навчання</button>
-                    <button>Видалити нейронну мережу</button>
-                </div>
+            <div>
+                {% for weight in weights %}
+                    <div class="data-item">
+                        <input type="checkbox" {% if weight.is_active %}checked{% endif %}> {{ weight.get_attribute_display }}
+                        <input type="number" class="weight-input" value="{{ weight.weight }}" step="0.01" min="0">
+                    </div>
+                {% empty %}
+                    <p>Нет доступных записей в weights.</p>
+                {% endfor %}
+            </div>
+
+
             </section>
 
             <section class="right-panel">
-                <h2>Список даних:</h2>
+                 <h2>Список даних:</h2>
+                 <form id="range-form" method="get" action="">
+                    <a>Від: </a>
+                    <input type="number" name="start" id="start-input" class="weight-input" value="{{ start }}" min="0" required>
+                    <a> до: </a>
+                    <input type="number" name="end" id="end-input" class="weight-input" value="{{ end }}" min="1" required>
+                    <button type="submit">Отобразить данные</button>
+                </form>
 
                 <!-- Прокручиваемый контейнер для списка данных с фиксированными размерами -->
                 <div class="scrollable-data-table">
                     <table>
                         <thead>
                             <tr>
-                                <th>CPU Load (%)</th>
-                                <th>Memory Usage (MB)</th>
-                                <th>SQL Queries</th>
-                                <th>Port</th>
-                                <th>Requests on Port</th>
-                                <th>Connection Date</th>
-                                <th>IP Address</th>
+                                <th>id</th>
+                                <th>src_ip</th>
+                                <th>dst_ip</th>
+                                <th>src_port</th>
+                                <th>dst_port</th>
+                                <th>flow_duration</th>
+                                <th>tot_fwd_pkts</th>
+                                <th>tot_bwd_pkts</th>
+                                <th>flow_byts_per_sec</th>
+                                <th>flow_pkts_per_sec</th>
+                                <th>fwd_iat_mean</th>
+                                <th>bwd_iat_mean</th>
+                                <th>protocol</th>
+                                <th>down_up_ratio</th>
+                                <th>pkt_size_avg</th>
+                                <th>fwd_pkts_per_sec</th>
+                                <th>bwd_pkts_per_sec</th>
+                                <th>label</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Пример строк -->
+                            {% for item in datas %}
                             <tr>
-                                <td>35.48</td>
-                                <td>9172.46</td>
-                                <td>8358</td>
-                                <td>36841</td>
-                                <td>118</td>
-                                <td>2024-09-18</td>
-                                <td>213.255.43.59</td>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.src_ip }}</td>
+                                <td>{{ item.dst_ip }}</td>
+                                <td>{{ item.src_port }}</td>
+                                <td>{{ item.dst_port }}</td>
+                                <td>{{ item.flow_duration }}</td>
+                                <td>{{ item.tot_fwd_pkts }}</td>
+                                <td>{{ item.tot_bwd_pkts }}</td>
+                                <td>{{ item.flow_byts_per_sec }}</td>
+                                <td>{{ item.flow_pkts_per_sec }}</td>
+                                <td>{{ item.fwd_iat_mean }}</td>
+                                <td>{{ item.bwd_iat_mean }}</td>
+                                <td>{{ item.protocol }}</td>
+                                <td>{{ item.down_up_ratio }}</td>
+                                <td>{{ item.pkt_size_avg }}</td>
+                                <td>{{ item.fwd_pkts_per_sec }}</td>
+                                <td>{{ item.bwd_pkts_per_sec }}</td>
+                                <td>{{ item.label }}</td>
                             </tr>
-                            <tr>
-                                <td>16.53</td>
-                                <td>6651.24</td>
-                                <td>3564</td>
-                                <td>36646</td>
-                                <td>274</td>
-                                <td>2024-09-23</td>
-                                <td>195.203.18.23</td>
-                            </tr>
-                            <tr>
-                                <td>35.48</td>
-                                <td>9172.46</td>
-                                <td>8358</td>
-                                <td>36841</td>
-                                <td>118</td>
-                                <td>2024-09-18</td>
-                                <td>213.255.43.59</td>
-                            </tr>
-                            <tr>
-                                <td>16.53</td>
-                                <td>6651.24</td>
-                                <td>3564</td>
-                                <td>36646</td>
-                                <td>274</td>
-                                <td>2024-09-23</td>
-                                <td>195.203.18.23</td>
-                            </tr>
-                            <tr>
-                                <td>35.48</td>
-                                <td>9172.46</td>
-                                <td>8358</td>
-                                <td>36841</td>
-                                <td>118</td>
-                                <td>2024-09-18</td>
-                                <td>213.255.43.59</td>
-                            </tr>
-                            <tr>
-                                <td>16.53</td>
-                                <td>6651.24</td>
-                                <td>3564</td>
-                                <td>36646</td>
-                                <td>274</td>
-                                <td>2024-09-23</td>
-                                <td>195.203.18.23</td>
-                            </tr>
-                            <tr>
-                                <td>35.48</td>
-                                <td>9172.46</td>
-                                <td>8358</td>
-                                <td>36841</td>
-                                <td>118</td>
-                                <td>2024-09-18</td>
-                                <td>213.255.43.59</td>
-                            </tr>
-                            <tr>
-                                <td>16.53</td>
-                                <td>6651.24</td>
-                                <td>3564</td>
-                                <td>36646</td>
-                                <td>274</td>
-                                <td>2024-09-23</td>
-                                <td>195.203.18.23</td>
-                            </tr>
-                            <!-- Добавьте дополнительные строки данных здесь -->
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>              
 
-                <!-- Кнопки, которые остаются под списком данных -->
-                <div class="data-buttons">
-                    <button>Стоп запис</button>
-                    <button>Продовжити запис</button>
-                    <button>Видалити дані</button>
-                    <button>Фільтр</button>
-                </div>
+                <!-- Кнопки, которые остаются под списком данных  потом будет что то другое--->
+<!--                <div class="data-buttons">-->
+<!--                    <button>Стоп запис</button>-->
+<!--                    <button>Продовжити запис</button>-->
+<!--                    <button>Видалити дані</button>-->
+<!--                    <button>Фільтр</button>-->
+<!--                </div>-->
             </section>
         </div>
-
+<!--
         <section class="analytics">
             <h2>Аналітика</h2>
     <canvas id="attackChart" width="600" height="200"></canvas>
@@ -187,6 +133,8 @@
     </script>
             </div>
         </section>
+
+-->
     </div>
 
 {% endblock %}
