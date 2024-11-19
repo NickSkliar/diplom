@@ -1,24 +1,20 @@
-# preprocess.py
+# firstAI/neural_network/preprocess.py
 
 import pandas as pd
 import numpy as np
 import ipaddress
 from sklearn.preprocessing import StandardScaler
-from database.models import TrainingData, TestingData
+from database.models import DownloadDB
 from firstAI.models import Weight
 import joblib
+import os
 
 class DataLoader:
-    def __init__(self, data_source='training', batch_size=10000):
-        """
-        Инициализация DataLoader.
-        :param data_source: 'training' или 'testing', указывает, откуда загружаются данные.
-        :param batch_size: Размер пакета данных для обработки.
-        """
+    def __init__(self, data_type='train', batch_size=10000, chunk_size=50000):
         self.batch_size = batch_size
         self.label_column = 'label'
-        self.scaler = StandardScaler()
-        self.data_source = data_source  # Указание источника данных
+        self.data_type = data_type  # 'train' или 'test'
+        self.chunk_size = chunk_size  # Размер чанка для обработки данных
 
         # Сопоставление атрибутов модели Weight с полями в таблице данных
         self.attribute_mapping = {
@@ -42,74 +38,121 @@ class DataLoader:
             # Добавьте дополнительные сопоставления, если необходимо
         }
 
-        # Получение списка активных признаков из модели Weight
+        # Получение списка активных признаков и их весов из модели Weight
         active_weights = Weight.objects.filter(is_active=True)
-        self.features = [self.attribute_mapping[weight.attribute] for weight in active_weights]
 
-    def load_data(self, limit=None):
-        """
-        Загрузка данных из базы данных.
-        :param limit: Ограничение на количество загружаемых строк.
-        :return: DataFrame с данными.
-        """
-        # Выбор источника данных
-        if self.data_source == 'training':
-            queryset = TrainingData.objects.all()
-        elif self.data_source == 'testing':
-            queryset = TestingData.objects.all()
+        self.db_features = []
+        self.features = []
+        self.feature_weights = []
+
+        for weight in active_weights:
+            feature = self.attribute_mapping[weight.attribute]
+            if feature == 'timestamp':
+                # Разбиваем 'timestamp' на 'hour' и 'day_of_week'
+                self.features.extend(['hour', 'day_of_week'])
+                self.db_features.append('timestamp')  # Для запроса к базе данных
+                # Присваиваем один и тот же вес обоим новым признакам
+                self.feature_weights.extend([weight.weight, weight.weight])
+            else:
+                self.features.append(feature)
+                self.db_features.append(feature)
+                self.feature_weights.append(weight.weight)
+
+        # Проверяем соответствие между количеством признаков и весов
+        if len(self.features) != len(self.feature_weights):
+            raise ValueError(f"Несоответствие размерностей: количество признаков ({len(self.features)}) и количество весов ({len(self.feature_weights)}) не совпадают.")
+
+        # Инициализация StandardScaler
+        if self.data_type == 'train':
+            self.scaler = StandardScaler()
+            self.fit_scaler()
         else:
-            raise ValueError("data_source должен быть 'training' или 'testing'")
+            # Загружаем обученный scaler
+            scaler_path = os.path.join('models', 'scaler.pkl')
+            if os.path.exists(scaler_path):
+                self.scaler = joblib.load(scaler_path)
+                print(f"Масштабировщик загружен из '{scaler_path}'.")
+            else:
+                raise FileNotFoundError(f"Не найден файл масштабировщика '{scaler_path}'. Пожалуйста, сначала обучите модель.")
 
-        if limit:
-            queryset = queryset[:limit]
+    def fit_scaler(self):
+        # Загрузка всех данных для обучения масштабировщика
+        queryset = DownloadDB.objects.filter(data_type='train')
+        records = []
+        total_records = queryset.count()
+        if total_records == 0:
+            print("Нет данных для обучения масштабировщика.")
+            return
 
-        # Преобразование данных в DataFrame
-        data = pd.DataFrame.from_records(queryset.values(*self.features, self.label_column))
-        return data
+        for batch_start in range(0, total_records, self.chunk_size):
+            batch_queryset = queryset[batch_start:batch_start+self.chunk_size]
+            batch_records = list(batch_queryset.values(*self.db_features))
+            batch_df = pd.DataFrame.from_records(batch_records)
+            batch_df = self.preprocess_batch(batch_df, scale_data=False)
+            if not batch_df.empty:
+                records.append(batch_df)
+            else:
+                print("После предобработки данные отсутствуют в текущем чанке при обучении масштабировщика.")
 
-    def preprocess_data(self, data):
-        """
-        Предобработка данных: обработка некорректных значений, масштабирование, обработка timestamp и IP.
-        :param data: DataFrame с исходными данными.
-        :return: DataFrame с обработанными данными.
-        """
+        if records:
+            full_data = pd.concat(records, ignore_index=True)
+            self.scaler.fit(full_data[self.features])
+        else:
+            print("Нет данных для обучения масштабировщика.")
+
+    def get_data(self):
+        # Загрузка данных по чанкам
+        queryset = DownloadDB.objects.filter(data_type=self.data_type)
+        total_records = queryset.count()
+        if total_records == 0:
+            print(f"Нет данных типа {self.data_type}.")
+            return
+
+        for batch_start in range(0, total_records, self.chunk_size):
+            batch_queryset = queryset[batch_start:batch_start+self.chunk_size]
+            batch_records = list(batch_queryset.values(*self.db_features, self.label_column))
+            batch_df = pd.DataFrame.from_records(batch_records)
+            batch_df = self.preprocess_batch(batch_df, scale_data=True)
+            if not batch_df.empty:
+                X = batch_df[self.features].values
+                y = batch_df[self.label_column].values
+                yield X, y
+            else:
+                print("После предобработки данные отсутствуют в текущем чанке.")
+
+    def preprocess_batch(self, data, scale_data=True):
         # Удаление строк с пропусками
         data = data.dropna()
 
-        # Кодирование меток
-        label_mapping = {
-            'Benign': 0,
-            'ddos': 1
-            # Добавьте дополнительные метки, если необходимо
-        }
-        data[self.label_column] = data[self.label_column].map(label_mapping)
+        # Проверяем, есть ли колонка 'label' в данных
+        if self.label_column in data.columns:
+            # Кодирование меток
+            label_mapping = {
+                'Benign': 0,
+                'ddos': 1
+                # Добавьте дополнительные метки, если необходимо
+            }
+            data[self.label_column] = data[self.label_column].map(label_mapping)
+            # Удаление строк с неизвестными метками
+            data = data.dropna(subset=[self.label_column])
 
-        # Удаление строк с неизвестными метками
-        data = data.dropna(subset=[self.label_column])
-
-        # Обработка timestamp, если он есть среди признаков
-        if 'timestamp' in self.features:
+        # Обработка timestamp
+        if 'timestamp' in data.columns:
             data['timestamp'] = pd.to_datetime(data['timestamp'], errors='coerce')
             data['hour'] = data['timestamp'].dt.hour
             data['day_of_week'] = data['timestamp'].dt.dayofweek
             data = data.drop(columns=['timestamp'], errors='ignore')
 
-            # Обновляем список признаков
-            self.features = [feature for feature in self.features if feature != 'timestamp']
-            self.features.extend(['hour', 'day_of_week'])
-
         # Преобразование IP-адресов в числовой формат
-        if 'src_ip' in self.features:
+        if 'src_ip' in data.columns:
             data['src_ip'] = data['src_ip'].apply(lambda x: int(ipaddress.ip_address(x)))
-        if 'dst_ip' in self.features:
+        if 'dst_ip' in data.columns:
             data['dst_ip'] = data['dst_ip'].apply(lambda x: int(ipaddress.ip_address(x)))
 
         # Обработка бесконечностей и слишком больших значений
         for feature in self.features:
             if feature in data.columns:
-                # Заменяем бесконечности на NaN
                 data[feature] = data[feature].replace([np.inf, -np.inf], np.nan)
-                # Убираем слишком большие значения
                 data[feature] = data[feature].apply(lambda x: np.nan if abs(x) > 1e10 else x)
 
         # Приведение данных к числовому типу и обработка ошибок
@@ -123,49 +166,27 @@ class DataLoader:
         removed_rows = initial_row_count - len(data)
 
         if removed_rows > 0:
-            print(f"Удалено {removed_rows} строк с некорректными значениями (NaN, бесконечности, слишком большие числа).")
+            print(f"Удалено {removed_rows} строк с некорректными значениями.")
+
+        # Убедимся, что все необходимые признаки присутствуют
+        for feature in self.features:
+            if feature not in data.columns:
+                print(f"Признак {feature} отсутствует в данных, заполняем нулями.")
+                data[feature] = 0.0
 
         # Масштабирование признаков
-        data[self.features] = self.scaler.fit_transform(data[self.features])
+        if scale_data and not data.empty:
+            data[self.features] = self.scaler.transform(data[self.features])
 
         # Приведение типов данных к float32
         data[self.features] = data[self.features].astype(np.float32)
-        data[self.label_column] = data[self.label_column].astype(np.float32)
+        if self.label_column in data.columns:
+            data[self.label_column] = data[self.label_column].astype(np.float32)
 
         return data
 
-    def get_data(self, limit=None):
-        """
-        Загрузка и предобработка данных.
-        :param limit: Ограничение на количество строк.
-        :return: Массивы X и y.
-        """
-        data = self.load_data(limit)
-        data = self.preprocess_data(data)
-        X = data[self.features].values
-        y = data[self.label_column].values
-        return X, y
-
-    def save_scaler(self, path):
-        """
-        Сохранение масштабировщика для дальнейшего использования.
-        :param path: Путь для сохранения.
-        """
-        joblib.dump(self.scaler, path)
-
-    def load_scaler(self, path):
-        """
-        Загрузка сохранённого масштабировщика.
-        :param path: Путь к сохранённому файлу.
-        """
-        self.scaler = joblib.load(path)
-
     def get_feature_weights(self):
-        """
-        Получение весов признаков из модели Weight.
-        :return: Список весов.
-        """
-        active_weights = Weight.objects.filter(is_active=True)
-        weights = {self.attribute_mapping[weight.attribute]: weight.weight for weight in active_weights}
-        feature_weights = [weights.get(feature, 1.0) for feature in self.features]
-        return feature_weights
+        return self.feature_weights
+
+    def get_input_size(self):
+        return len(self.features)
