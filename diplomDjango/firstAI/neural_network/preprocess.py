@@ -16,6 +16,7 @@ class DataLoader:
         self.data_type = data_type  # 'train' или 'test'
         self.chunk_size = chunk_size  # Размер чанка для обработки данных
 
+
         # Сопоставление атрибутов модели Weight с полями в таблице данных
         self.attribute_mapping = {
             'src_ip': 'src_ip',
@@ -130,7 +131,6 @@ class DataLoader:
             label_mapping = {
                 'Benign': 0,
                 'ddos': 1
-                # Добавьте дополнительные метки, если необходимо
             }
             data[self.label_column] = data[self.label_column].map(label_mapping)
             # Удаление строк с неизвестными метками

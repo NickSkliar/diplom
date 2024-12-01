@@ -1,3 +1,5 @@
+# database\management\commands\import_csv
+
 from django.core.management.base import BaseCommand
 import pandas as pd
 import os

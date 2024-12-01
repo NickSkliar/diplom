@@ -260,3 +260,34 @@ form{
 #range-form button:hover {
   background-color: #2a9d9d;
 }
+
+
+
+/*______я добавил__________  */
+
+
+.metrics-section, .training-results-section {
+    margin-top: 20px;
+}
+
+.metrics-section h2, .training-results-section h2 {
+    margin-bottom: 10px;
+}
+
+.confusion-matrix, .losses-table, .feature-importance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.confusion-matrix th, .confusion-matrix td,
+.losses-table th, .losses-table td,
+.feature-importance-table th, .feature-importance-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.confusion-matrix th {
+    background-color: #f2f2f2;
+}

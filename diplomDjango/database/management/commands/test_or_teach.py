@@ -1,3 +1,5 @@
+# database\management\commands\test_or_teach
+
 from django.core.management.base import BaseCommand
 from database.models import DownloadDB
 from django.db.models.functions import TruncDate

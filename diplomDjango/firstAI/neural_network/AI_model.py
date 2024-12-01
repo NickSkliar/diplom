@@ -8,17 +8,17 @@ class NeuralNetwork(nn.Module):
         super(NeuralNetwork, self).__init__()
         # Определение слоев нейронной сети
         self.layer1 = nn.Sequential(
-            nn.Linear(input_size, 64),  # Первый скрытый слой
+            nn.Linear(input_size, 64),  # Перший скритий шар
             nn.ReLU(),
             nn.Dropout(0.5)
         )
         self.layer2 = nn.Sequential(
-            nn.Linear(64, 32),  # Второй скрытый слой
+            nn.Linear(64, 32),  # 2 скритий шар
             nn.ReLU(),
             nn.Dropout(0.5)
         )
         self.layer3 = nn.Sequential(
-            nn.Linear(32, 16),  # Третий скрытый слой
+            nn.Linear(32, 16),  # 3 скритий шар
             nn.ReLU(),
             nn.Dropout(0.5)
         )
@@ -29,12 +29,10 @@ class NeuralNetwork(nn.Module):
             with torch.no_grad():
                 feature_weights_tensor = torch.tensor(feature_weights, dtype=torch.float32)
                 if feature_weights_tensor.shape[0] != input_size:
-                    raise ValueError("Размерность feature_weights должна соответствовать input_size")
-                # Инициализируем веса первого слоя, умножая начальные веса на веса признаков
+                    raise ValueError("Розмірність feature_weights має відповідати input_size")
                 init_weights = self.layer1[0].weight.data
                 init_weights = init_weights * feature_weights_tensor.unsqueeze(0)
                 self.layer1[0].weight.data.copy_(init_weights)
-                # Инициализируем смещения нулями
                 self.layer1[0].bias.data.fill_(0.0)
 
     def forward(self, x):

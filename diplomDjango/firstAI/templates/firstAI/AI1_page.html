@@ -96,46 +96,89 @@
                 <a href="{% url 'main_page' %}" class="nav-button">Почати навчання</a>
                 <a href="{% url 'AI1_page' %}" class="nav-button">Почати тестування</a>
               </div>
+
             </section>
 
 
-<!--
-        <section class="analytics">
-            <h2>Аналітика</h2>
-    <canvas id="attackChart" width="600" height="200"></canvas>
-            <div class="chart">
-                <script>
-        // Данные для графика: количество атак за каждый год
-        const labels = ['2020', '2021', '2022', '2023'];  // Годы
-        const attackData = [500, 750, 1200, 1500];        // Количество атак за каждый год
+<!-- New section for Rest Metrics -->
+<section class="right-panel">
 
-        // Настройки для Chart.js
-        const ctx = document.getElementById('attackChart').getContext('2d');
-        const attackChart = new Chart(ctx, {
-            type: 'line',  // Тип графика - линейный
-            data: {
-                labels: labels,  // Подписи по оси X (годы)
-                datasets: [{
-                    label: 'Number of Attacks',
-                    data: attackData,  // Данные по оси Y (количество атак)
-                    borderColor: 'green',             // Цвет линии
-                    backgroundColor: 'rgba(0, 255, 0, 0.2)',  // Цвет под графиком
-                    borderWidth: 2                    // Толщина линии
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true  // Начинаем ось Y с нуля
-                    }
-                }
-            }
-        });
-    </script>
-            </div>
+        <section class="metrics-section" >
+            <h2>Результати Тестування</h2>
+            <p><strong>Точність (Accuracy):</strong> {{ rest_metrics.accuracy }}</p>
+            <p><strong>Прецизійність (Precision):</strong> {{ rest_metrics.precision }}</p>
+            <p><strong>Повнота (Recall):</strong> {{ rest_metrics.recall }}</p>
+            <p><strong>F1 Score:</strong> {{ rest_metrics.f1_score }}</p>
+            <p><strong>Загальна кількість рядків:</strong> {{ rest_metrics.total_rows }}</p>
+            <p><strong>Правильні передбачення:</strong> {{ rest_metrics.correct_predictions }}</p>
+            <p><strong>Помилки:</strong> {{ rest_metrics.errors }}</p>
+
+            <h3>Матриця Плутанини (Confusion Matrix)</h3>
+            <table class="confusion-matrix">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Прогнозовано Негативне</th>
+                        <th>Прогнозовано Позитивне</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Фактично Негативне</th>
+                        <td>{{ rest_metrics.confusion_matrix.0.0 }}</td>
+                        <td>{{ rest_metrics.confusion_matrix.0.1 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Фактично Позитивне</th>
+                        <td>{{ rest_metrics.confusion_matrix.1.0 }}</td>
+                        <td>{{ rest_metrics.confusion_matrix.1.1 }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
 
--->
-    </div>
+        <!-- New section for Training Results -->
+        <section class="training-results-section">
+            <h2>Результати Навчання</h2>
 
+            <h3>Втрати (Losses)</h3>
+            <table class="losses-table">
+                <thead>
+                    <tr>
+                        <th>Епоха</th>
+                        <th>Втрати</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loss in training_results.losses %}
+                    <tr>
+                        <td>{{ loss.epoch }}</td>
+                        <td>{{ loss.loss }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Важливість Ознак (Feature Importance)</h3>
+            <table class="feature-importance-table">
+                <thead>
+                    <tr>
+                        <th>Ознака</th>
+                        <th>Вага</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature in training_results.feature_importance %}
+                    <tr>
+                        <td>{{ feature.feature }}</td>
+                        <td>{{ feature.weight }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+</section>
+
+        </div>
+    </div>
 {% endblock %}

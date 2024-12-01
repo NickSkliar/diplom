@@ -24,5 +24,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('AI1/', include('firstAI.urls')),
-    path('AI2/', include('secondAI.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

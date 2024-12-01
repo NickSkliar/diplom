@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     #my app:
     'main',
     'firstAI',
-    'secondAI',
     'database',
 ]
 
