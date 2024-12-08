@@ -1,0 +1,473 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f8f8;
+  color: #333;
+  height: 100vh; /* Устанавливаем высоту на весь экран */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Разделить элементы */
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  height: 100vh; /* Высота на весь экран */
+}
+
+header {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.main-content {
+  max-width: 100%;
+  display: flex;
+  gap: 2%;
+  justify-content: center;
+  height: 100%; /* Высота на весь экран */
+}
+
+.left-panel {
+  background-color: #e0f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 1;
+  display: flex;
+  max-width: 22%;
+  flex-direction: column;
+  height: 100%; /* Высота панели на весь экран */
+  overflow-y: auto; /* Прокрутка внутри панели, если контент выходит за пределы */
+}
+
+.right-panel {
+  background-color: #e0f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  flex: 2;
+  max-width: 65%; /* Ограничиваем ширину правой панели до 65% */
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Высота панели на весь экран */
+  overflow-y: auto; /* Прокрутка внутри панели, если контент выходит за пределы */
+}
+
+.data-item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.data-item h2 {
+align-items: center;
+}
+
+.data-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* Три колонки: инпут, текст, вес */
+  align-items: flex-start; /* Выровнять элементы по верхнему краю */
+  margin-bottom: 5px;
+   gap: 5px; /* Промежуток между инпутом и текстом */
+  padding: 5px 0; /* Отступы сверху и снизу каждого элемента */
+}
+
+.data-item_b {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.data-item .weight {
+  align-self: flex-end; /* Выровнять второй заголовок по нижнему краю */
+}
+
+.weight {
+  font-weight: bold;
+  margin-bottom: 50px;
+
+}
+
+.buttons, .data-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button {
+  background-color: #36c2c2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2ea2a2;
+}
+
+/* Прокручиваемый контейнер для таблицы данных в правой панели */
+.scrollable-data-table {
+  max-height: 600px; /* Фиксированная высота для контейнера таблицы */
+  overflow-y: auto; /* Включаем вертикальную прокрутку */
+  overflow-x: auto; /* Включаем горизонтальную прокрутку */
+  margin-bottom: 10px;
+  border: 1px solid #ddd; /* Граница для прокручиваемого контейнера */
+  border-radius: 5px;
+  background-color: #ffffff; /* Цвет фона */
+}
+
+.scrollable-data-table::-webkit-scrollbar {
+  width: 8px;
+  height: 8px; /* Высота горизонтальной полосы прокрутки */
+}
+
+.scrollable-data-table::-webkit-scrollbar-thumb {
+  background-color: #36c2c2;
+  border-radius: 4px;
+}
+
+.scrollable-data-table::-webkit-scrollbar-track {
+  background: #e0f5f5;
+}
+
+.right-panel table, .left-panel table {
+  width: 100%;
+  border-collapse: collapse;
+   min-width: 1200px; /* Минимальная ширина таблицы для горизонтальной прокрутки */
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.analytics {
+  margin-top: 20px;
+  background-color: #e0f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.scrollable-data-table table {
+  width: 100%; /* Ширина таблицы */
+  border-collapse: collapse; /* Объединение границ ячеек */
+}
+
+.scrollable-data-table th, .scrollable-data-table td {
+  padding: 10px; /* Отступы ячеек */
+  text-align: center; /* Выравнивание текста по центру */
+  border: 0,5px solid #ddd; /* Границы вокруг каждой ячейки */
+}
+.scrollable-data-table th {
+  background-color: #e0f5f5; /* Цвет фона заголовков */
+  font-weight: bold; /* Жирный шрифт для заголовков */
+  position: sticky; /* Делаем заголовок фиксированным при прокрутке */
+  top: 0; /* Привязываем к верху контейнера */
+  z-index: 10; /* Увеличиваем z-index для отображения над данными */
+}
+
+/* Для ячеек данных */
+.scrollable-data-table td {
+  background-color: #f9f9f9; /* Легкий фон для данных */
+}
+
+/* Основні стилі для навігаційного контейнера */
+.navbar {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    }
+        /* Стилі для кнопок навігації */
+.nav-button {
+    background-color: #36c2c2; /* Зелений колір кнопки */
+    color: white;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #2ea2a2;
+}
+
+form{
+ padding: 10px;
+}
+
+/* Основные стили для формы */
+#range-form {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Расстояние между элементами формы */
+  margin: 15px 0; /* Отступы сверху и снизу для всей формы */
+  padding: 10px;
+  border-radius: 8px; /* Скругленные углы */
+  border: 1px solid #ddd;
+}
+
+/* Стили для текста "Від" и "до" */
+#range-form a {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+}
+
+/* Стили для полей ввода */
+.weight-input {
+  width: 80px;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Стили для кнопки */
+#range-form button {
+  color: white;
+  padding: 8px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#range-form button:hover {
+  background-color: #2a9d9d;
+}
+
+
+
+/*______metrics__________  */
+
+.metrics-section {
+    background-color: #ffffff; /* Белый фон для контраста */
+    background-color: #e0f5f5; /* Фон секции */
+    padding: 20px; /* Внутренние отступы */
+    margin: 20px auto; /* Отступы сверху/снизу и центрирование */
+    border-radius: 10px; /* Скруглённые углы */
+    max-width: 1200px; /* Максимальная ширина секции */
+    width: 90%; /* Занимает 90% ширины экрана, но не больше max-width */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Легкая тень */
+
+}
+
+.metrics-section h2 {
+    font-size: 20px; /* Чуть больший размер шрифта для заголовка */
+    margin-bottom: 15px;
+    color: #007b7b; /* Слегка выделенный цвет */
+    text-align: center; /* Центрирование заголовка */
+}
+
+.metrics-section p {
+    margin-bottom: 10px; /* Отступы между абзацами */
+}
+
+.metrics-section strong {
+    color: #007b7b; /* Подсветка ключевых значений */
+    font-weight: bold;
+}
+
+/* Стили для таблицы внутри metrics-section */
+.metrics-section .confusion-matrix {
+    margin: 0 auto; /* Центрирование таблицы */
+    max-width: 60%; /* Таблица не выходит за границы секции */
+}
+
+.confusion-matrix {
+    width: 20%; /* Таблица занимает всю ширину контейнера */
+    border-collapse: collapse; /* Убираем лишние промежутки */
+    margin-top: 15px; /* Отступ сверху */
+    font-size: 14px; /* Чуть меньший размер шрифта для таблицы */
+       text-align: center; /* Центрируем текст */
+}
+
+.confusion-matrix th, .confusion-matrix td {
+    padding: 10px;
+    text-align: center; /* Центрирование текста */
+    border: 1px solid #ddd; /* Легкая граница */
+}
+
+.confusion-matrix th {
+    background-color: #007b7b; /* Темно-бирюзовый цвет для заголовков */
+    color: #ffffff; /* Белый текст */
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* Границы и базовые стили ячеек */
+.confusion-matrix td {
+    padding: 10px;
+    border: 1px solid #ddd; /* Легкие границы */
+}
+
+/* Стили для дополнительной информации */
+.metrics-section .highlight {
+    background-color: #e0f5f5; /* Легкий цвет фона для акцента */
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px; /* Отступ между элементами */
+}
+
+/* Основной стиль таблицы */
+.confusion-matrix, .losses-table, .feature-importance-table {
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px; /* Оптимальный размер шрифта */
+}
+
+/* Общие стили для ячеек */
+.confusion-matrix th, .confusion-matrix td,
+.losses-table th, .losses-table td,
+.feature-importance-table th, .feature-importance-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd; /* Легкая граница */
+}
+
+/* Заголовки таблицы */
+.confusion-matrix th, .losses-table th, .feature-importance-table th {
+    background-color: #f7f7f7; /* Светлый фон для заголовков */
+    font-weight: bold;
+    color: #555; /* Контрастный цвет текста */
+}
+
+/* Чередование цветов строк */
+.confusion-matrix tr:nth-child(odd),
+.losses-table tr:nth-child(odd),
+.feature-importance-table tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Светло-серый фон для нечётных строк */
+}
+
+.confusion-matrix tr:nth-child(even),
+.losses-table tr:nth-child(even),
+.feature-importance-table tr:nth-child(even) {
+    background-color: #ffffff; /* Белый фон для чётных строк */
+}
+
+/* Дополнительное выделение при наведении */
+.confusion-matrix tr:hover,
+.losses-table tr:hover,
+.feature-importance-table tr:hover {
+    background-color: #e0f5f5; /* Подсветка строки при наведении */
+    cursor: pointer; /* Меняем указатель мыши */
+}
+
+/* Подсветка строки при наведении */
+.confusion-matrix tr:hover td {
+    background-color: #e0f7fa; /* Подсветка строки */
+    color: #007b7b; /* Цвет текста */
+    cursor: pointer; /* Указатель */
+}
+
+/* .training-results-section */
+.training-results-section {
+    background-color: #ffffff; /* Белый фон для контраста */
+    padding: 20px; /* Внутренние отступы */
+    margin: 20px auto; /* Центрирование и отступы сверху/снизу */
+    border-radius: 10px; /* Скруглённые углы */
+    max-width: 800px; /* Максимальная ширина секции */
+    width: 90%; /* Адаптивная ширина */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+    text-align: center; /* Центрирование текста */
+}
+/* Стили для заголовков внутри секции */
+.training-results-section h2 {
+    font-size: 20px; /* Размер шрифта для заголовка */
+    margin-bottom: 15px; /* Отступ снизу */
+    color: #007b7b; /* Бирюзовый цвет заголовка */
+}
+
+/* Таблицы внутри training-results-section */
+.training-results-section table {
+    margin: 0 auto; /* Центрирование таблицы */
+    border-collapse: collapse; /* Убираем промежутки между ячейками */
+    width: 100%; /* Таблица занимает всю ширину секции */
+    max-width: 100%; /* Не выходит за пределы секции */
+}
+
+/* Стили для заголовков таблицы */
+.training-results-section th {
+    background-color: #f7f7f7; /* Светлый фон для заголовков */
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Стили для данных таблицы */
+.training-results-section td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Чередование строк */
+.training-results-section tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.training-results-section tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+/* Інструкція користувача */
+.instructions {
+    list-style: decimal inside;
+    padding-left: 0;
+}
+
+.instructions li {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.instructions strong {
+    color: #007b7b;
+}
+
+.instructions code {
+    background-color: #f1f1f1;
+    color: #d6336c;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.instructions ul {
+    list-style: disc inside;
+    padding-left: 20px;
+}
+
+.instructions ul ul {
+    list-style: circle inside;
+    padding-left: 20px;
+}

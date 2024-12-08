@@ -1,0 +1,185 @@
+{% extends 'main/layout.html' %}
+
+{% block title %} neural network {% endblock %}
+
+{% block content %}
+    <div class="container">
+
+        <div class="main-content">
+
+            <section class="left-panel">
+              <div class="data-item">
+                <span class="weight"><h2>Дані, з якими працюємо: </h2></span>
+                <span class="weight"><h2>  Ваги:</h2></span>
+            </div>
+
+            <div>
+                {% for weight in weights %}
+                    <div class="data-item">
+                        <input type="checkbox" {% if weight.is_active %}checked{% endif %}> {{ weight.get_attribute_display }}
+                        <a> {{ weight.weight }} </a>
+                    </div>
+                {% empty %}
+                    <p>Нет доступных записей в weights.</p>
+                {% endfor %}
+            </div>
+
+
+            </section>
+
+
+            <section class="right-panel">
+                 <h2>Список даних:</h2>
+                 <form id="range-form" method="get" action="">
+                    <a>Від: </a>
+                    <input type="number" name="start" id="start-input" class="weight-input" value="{{ start }}" min="0" required>
+                    <a> до: </a>
+                    <input type="number" name="end" id="end-input" class="weight-input" value="{{ end }}" min="1" required>
+                    <button type="submit">Вивести дані</button>
+                </form>
+
+                <!-- Прокручиваемый контейнер для списка данных с фиксированными размерами -->
+                <div class="scrollable-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>src_ip</th>
+                                <th>dst_ip</th>
+                                <th>src_port</th>
+                                <th>dst_port</th>
+                                <th>timestamp</th>
+                                <th>flow_duration</th>
+                                <th>tot_fwd_pkts</th>
+                                <th>tot_bwd_pkts</th>
+                                <th>flow_byts_per_sec</th>
+                                <th>flow_pkts_per_sec</th>
+                                <th>fwd_iat_mean</th>
+                                <th>bwd_iat_mean</th>
+                                <th>protocol</th>
+                                <th>down_up_ratio</th>
+                                <th>pkt_size_avg</th>
+                                <th>fwd_pkts_per_sec</th>
+                                <th>bwd_pkts_per_sec</th>
+                                <th>label</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in datas %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.src_ip }}</td>
+                                <td>{{ item.dst_ip }}</td>
+                                <td>{{ item.src_port }}</td>
+                                <td>{{ item.dst_port }}</td>
+                                <td>{{ item.timestamp }}</td>
+                                <td>{{ item.flow_duration }}</td>
+                                <td>{{ item.tot_fwd_pkts }}</td>
+                                <td>{{ item.tot_bwd_pkts }}</td>
+                                <td>{{ item.flow_byts_per_sec }}</td>
+                                <td>{{ item.flow_pkts_per_sec }}</td>
+                                <td>{{ item.fwd_iat_mean }}</td>
+                                <td>{{ item.bwd_iat_mean }}</td>
+                                <td>{{ item.protocol }}</td>
+                                <td>{{ item.down_up_ratio }}</td>
+                                <td>{{ item.pkt_size_avg }}</td>
+                                <td>{{ item.fwd_pkts_per_sec }}</td>
+                                <td>{{ item.bwd_pkts_per_sec }}</td>
+                                <td>{{ item.label }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>              
+
+              <div class="navbar">
+                <a href="{% url 'main_page' %}" class="nav-button">Почати навчання</a>
+                <a href="{% url 'AI1_page' %}" class="nav-button">Почати тестування</a>
+              </div>
+
+            </section>
+
+        </div>
+
+
+<!-- New section for Rest Metrics -->
+        <section class="metrics-section" >
+            <h2>Результати Тестування</h2>
+            <p><strong>Час тестування:</strong> {{ rest_metrics.test_time_seconds }}</p>
+            <p><strong>Точність (Accuracy):</strong> {{ rest_metrics.accuracy }}</p>
+            <p><strong>Прецизійність (Precision):</strong> {{ rest_metrics.precision }}</p>
+            <p><strong>Повнота (Recall):</strong> {{ rest_metrics.recall }}</p>
+            <p><strong>F1 Score:</strong> {{ rest_metrics.f1_score }}</p>
+            <p><strong>Загальна кількість рядків:</strong> {{ rest_metrics.total_rows }}</p>
+            <p><strong>Правильні передбачення:</strong> {{ rest_metrics.correct_predictions }}</p>
+            <p><strong>Помилки:</strong> {{ rest_metrics.errors }}</p>
+
+            <h2>Матриця Плутанини (Confusion Matrix)</h2>
+            <table class="confusion-matrix">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Прогнозовано Негативне</th>
+                        <th>Прогнозовано Позитивне</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Фактично Негативне</th>
+                        <td>{{ rest_metrics.confusion_matrix.0.0 }}</td>
+                        <td>{{ rest_metrics.confusion_matrix.0.1 }}</td>
+                    </tr>
+                    <tr>
+                        <th>Фактично Позитивне</th>
+                        <td>{{ rest_metrics.confusion_matrix.1.0 }}</td>
+                        <td>{{ rest_metrics.confusion_matrix.1.1 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- New section for Training Results -->
+        <section class="training-results-section">
+            <h2>Результати Навчання</h2>
+                <p><strong>Час навчання:</strong> {{ training_results.training_time_seconds }}</p>
+            <h2>Втрати (Losses)</h2>
+            <table class="losses-table">
+                <thead>
+                    <tr>
+                        <th>Епоха</th>
+                        <th>Втрати</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loss in training_results.losses %}
+                    <tr>
+                        <td>{{ loss.epoch }}</td>
+                        <td>{{ loss.loss }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h2>Важливість Ознак (Feature Importance)</h2>
+            <table class="feature-importance-table">
+                <thead>
+                    <tr>
+                        <th>Ознака</th>
+                        <th>Вага</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature in training_results.feature_importance %}
+                    <tr>
+                        <td>{{ feature.feature }}</td>
+                        <td>{{ feature.weight }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+
+
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}   {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header>
+            <h1>Протидія мережевим атакам</h1>
+                  <!-- Контейнер навігації -->
+    <div class="navbar">
+        <a href="{% url 'main_page' %}" class="nav-button">Головна сторінка</a>
+        <a href="{% url 'AI1_page' %}" class="nav-button">Нейронна мережа</a>
+        <a href="{% url 'admin:index' %}" class="nav-button">Записи БД</a>
+    </div>
+</header>
+
+    {% block content %}
+
+    {% endblock %}
+</body>
+</html>
