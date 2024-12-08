@@ -8,21 +8,21 @@ class NeuralNetwork(nn.Module):
         super(NeuralNetwork, self).__init__()
         # Определение слоев нейронной сети
         self.layer1 = nn.Sequential(
-            nn.Linear(input_size, 64),  # Перший скритий шар
+            nn.Linear(input_size, 40),  # Перший скритий шар
             nn.ReLU(),
             nn.Dropout(0.5)
         )
         self.layer2 = nn.Sequential(
-            nn.Linear(64, 32),  # 2 скритий шар
+            nn.Linear(40, 25),  # 2 скритий шар
             nn.ReLU(),
             nn.Dropout(0.5)
         )
         self.layer3 = nn.Sequential(
-            nn.Linear(32, 16),  # 3 скритий шар
+            nn.Linear(25, 13),  # 3 скритий шар
             nn.ReLU(),
             nn.Dropout(0.5)
         )
-        self.output_layer = nn.Linear(16, 1)  # Выходной слой для бинарной классификации
+        self.output_layer = nn.Linear(13, 1)  # Выходной слой для бинарной классификации
 
         # Инициализация весов первого слоя с использованием весов признаков
         if feature_weights is not None:

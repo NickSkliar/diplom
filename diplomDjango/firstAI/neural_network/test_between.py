@@ -1,4 +1,4 @@
-# firstAI/neural_network/test.py
+# firstAI/neural_network/test_between.py
 
 import torch
 from torch.utils.data import DataLoader as TorchDataLoader
@@ -10,52 +10,59 @@ import joblib
 import json
 import time
 
-def test_model(batch_size=512, chunk_size=50000):
-    # Перевіряємо доступність GPU
+
+def test_model(start_index, end_index, batch_size=512):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Використовується пристрій: {device}')
 
-    # Засікаємо час тестування
     start_time = time.time()
 
-    # Завантаження масштабувальника
     scaler_path = os.path.join('models', 'scaler.pkl')
     if not os.path.exists(scaler_path):
         raise FileNotFoundError(f"Не знайдено файл масштабувальника '{scaler_path}'.")
-    scaler = joblib.load(scaler_path)  # Використовуємо joblib для завантаження
+    scaler = joblib.load(scaler_path)
     print(f"Масштабувальник завантажено з '{scaler_path}'.")
 
-    # Ініціалізація DataLoader для тестових даних
-    data_loader = DataLoader(data_type='test', chunk_size=chunk_size)
+    # Завантажимо повні тестові дані
+    data_loader = DataLoader(data_type='test')
+    X_test, y_test = data_loader.get_data_full()
 
-    feature_names = data_loader.features
-    input_size = data_loader.get_input_size()
+    if len(X_test) == 0:
+        print("Немає даних для тестування.")
+        return
 
-    # Завантаження моделі
+    if end_index > len(X_test):
+        raise ValueError(f"Кінцевий індекс ({end_index}) виходить за межі доступних даних ({len(X_test)})")
+    if start_index < 0 or start_index >= end_index:
+        raise ValueError(f"Некоректно задані індекси: start={start_index}, end={end_index}")
+
+    # Вибираємо потрібний проміжок
+    X_test_slice = X_test[start_index:end_index]
+    y_test_slice = y_test[start_index:end_index]
+
+    input_size = X_test_slice.shape[1]
     model_path = os.path.join('models', 'model.pth')
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Не знайдено навченої моделі '{model_path}'.")
     model = NeuralNetwork(input_size)
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model = model.to(device)
     model.eval()
+
+    X_test_tensor = torch.from_numpy(X_test_slice).float().to(device)
+    y_test_tensor = torch.from_numpy(y_test_slice).float().unsqueeze(1).to(device)
+
+    test_dataset = torch.utils.data.TensorDataset(X_test_tensor, y_test_tensor)
+    test_loader = TorchDataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
     all_outputs = []
     all_labels = []
 
     with torch.no_grad():
-        for X_test_chunk, y_test_chunk in data_loader.get_data():
-            X_test_tensor = torch.from_numpy(X_test_chunk).to(device)
-            y_test_tensor = torch.from_numpy(y_test_chunk).unsqueeze(1).to(device)
-
-            # Створення DataLoader для пакетної обробки
-            test_dataset = torch.utils.data.TensorDataset(X_test_tensor, y_test_tensor)
-            test_loader = TorchDataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-            for batch_X, batch_y in test_loader:
-                outputs = model(batch_X)
-                all_outputs.append(outputs.cpu())
-                all_labels.append(batch_y.cpu())
+        for batch_X, batch_y in test_loader:
+            outputs = model(batch_X)
+            all_outputs.append(outputs.cpu())
+            all_labels.append(batch_y.cpu())
 
     if all_outputs:
         outputs = torch.cat(all_outputs)
@@ -64,7 +71,6 @@ def test_model(batch_size=512, chunk_size=50000):
         y_true = labels.numpy()
         y_pred = predicted.numpy()
 
-        # Метрики
         accuracy = accuracy_score(y_true, y_pred)
         precision = precision_score(y_true, y_pred, zero_division=0)
         recall = recall_score(y_true, y_pred, zero_division=0)
@@ -72,8 +78,6 @@ def test_model(batch_size=512, chunk_size=50000):
         correct_predictions = int(sum(y_true == y_pred))
         total_errors = int(sum(y_true != y_pred))
         total_rows = int(len(y_true))
-
-        # Матриця плутанини
         cm = confusion_matrix(y_true, y_pred)
         print(f'Матриця плутанини:\n{cm}')
 
@@ -85,12 +89,10 @@ def test_model(batch_size=512, chunk_size=50000):
         print(f'Вгадано правильно: {correct_predictions}')
         print(f'Помилки: {total_errors}')
 
-        # Засікаємо кінець тестування і розраховуємо час
         end_time = time.time()
         test_time = end_time - start_time
         print(f"Час тестування: {test_time:.2f} секунд")
 
-        # Збереження метрик у JSON
         metrics = {
             "accuracy": float(accuracy),
             "precision": float(precision),

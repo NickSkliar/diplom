@@ -1,6 +1,6 @@
 {% extends 'main/layout.html' %}
 
-{% block title %} AI_1  {% endblock %}
+{% block title %} neural network {% endblock %}
 
 {% block content %}
     <div class="container">
@@ -35,7 +35,7 @@
                     <input type="number" name="start" id="start-input" class="weight-input" value="{{ start }}" min="0" required>
                     <a> до: </a>
                     <input type="number" name="end" id="end-input" class="weight-input" value="{{ end }}" min="1" required>
-                    <button type="submit">Отобразить данные</button>
+                    <button type="submit">Вивести дані</button>
                 </form>
 
                 <!-- Прокручиваемый контейнер для списка данных с фиксированными размерами -->
@@ -99,12 +99,13 @@
 
             </section>
 
+        </div>
+
 
 <!-- New section for Rest Metrics -->
-<section class="right-panel">
-
         <section class="metrics-section" >
             <h2>Результати Тестування</h2>
+            <p><strong>Час тестування:</strong> {{ rest_metrics.test_time_seconds }}</p>
             <p><strong>Точність (Accuracy):</strong> {{ rest_metrics.accuracy }}</p>
             <p><strong>Прецизійність (Precision):</strong> {{ rest_metrics.precision }}</p>
             <p><strong>Повнота (Recall):</strong> {{ rest_metrics.recall }}</p>
@@ -113,7 +114,7 @@
             <p><strong>Правильні передбачення:</strong> {{ rest_metrics.correct_predictions }}</p>
             <p><strong>Помилки:</strong> {{ rest_metrics.errors }}</p>
 
-            <h3>Матриця Плутанини (Confusion Matrix)</h3>
+            <h2>Матриця Плутанини (Confusion Matrix)</h2>
             <table class="confusion-matrix">
                 <thead>
                     <tr>
@@ -140,8 +141,8 @@
         <!-- New section for Training Results -->
         <section class="training-results-section">
             <h2>Результати Навчання</h2>
-
-            <h3>Втрати (Losses)</h3>
+                <p><strong>Час навчання:</strong> {{ training_results.training_time_seconds }}</p>
+            <h2>Втрати (Losses)</h2>
             <table class="losses-table">
                 <thead>
                     <tr>
@@ -159,7 +160,7 @@
                 </tbody>
             </table>
 
-            <h3>Важливість Ознак (Feature Importance)</h3>
+            <h2>Важливість Ознак (Feature Importance)</h2>
             <table class="feature-importance-table">
                 <thead>
                     <tr>
@@ -177,8 +178,8 @@
                 </tbody>
             </table>
         </section>
-</section>
 
-        </div>
+
+
     </div>
 {% endblock %}

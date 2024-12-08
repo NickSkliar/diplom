@@ -10,6 +10,7 @@ import os
 import joblib
 import numpy as np
 import json
+import time
 
 def train_model(num_epochs=10, batch_size=512, chunk_size=50000):
     # Перевіряємо доступність GPU
@@ -35,7 +36,10 @@ def train_model(num_epochs=10, batch_size=512, chunk_size=50000):
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # Для збереження результатів навчання
-    training_results = {"losses": [], "feature_importance": []}
+    training_results = {"losses": [], "feature_importance": [], "training_time_seconds": None}
+
+    # Засікаємо час навчання
+    start_time = time.time()
 
     # Навчання моделі
     for epoch in range(num_epochs):
@@ -68,6 +72,12 @@ def train_model(num_epochs=10, batch_size=512, chunk_size=50000):
         else:
             print(f'Epoch [{epoch+1}/{num_epochs}], немає даних для навчання.')
 
+    # Вимірюємо час навчання
+    end_time = time.time()
+    training_time = end_time - start_time
+    training_results["training_time_seconds"] = training_time
+    print(f"Час навчання: {training_time:.2f} секунд")
+
     # Збереження навченого масштабувальника
     scaler = data_loader.scaler
     os.makedirs('models', exist_ok=True)
@@ -95,7 +105,7 @@ def train_model(num_epochs=10, batch_size=512, chunk_size=50000):
             print(f"{feature} - {weight:.4f}")
             training_results["feature_importance"].append({
                 "feature": feature,
-                "weight": float(weight)  # Перетворення до стандартного float
+                "weight": float(weight)
             })
 
         # Збереження результатів у JSON
